@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="A small Express starter with a working health check."
+    />
+    <title>Express Starter</title>
+    <link rel="stylesheet" href="/style.css" />
+    <script src="/script.js" defer></script>
+  </head>
+  <body>
+    <main class="page">
+      <section class="panel" aria-labelledby="page-title">
+        <div class="eyebrow">
+          <span class="status-dot" aria-hidden="true"></span>
+          EXPRESS STARTER
+        </div>
+
+        <h1 id="page-title">Your server is ready.</h1>
+        <p class="intro">
+          A simple starting point for your next idea. Your Express server is
+          serving this page and a health-check endpoint.
+        </p>
+
+        <div class="check-card">
+          <div>
+            <p class="check-label">Server status</p>
+            <p class="check-result" id="server-status" aria-live="polite">
+              Checking connection…
+            </p>
+          </div>
+          <button id="check-button" type="button">Check again</button>
+        </div>
+
+        <p class="hint">
+          Edit <code>public/index.html</code>, <code>public/style.css</code>,
+          and <code>public/script.js</code> to make this page yours.
+        </p>
+      </section>
+      <footer>Built with Express</footer>
+    </main>
+  </body>
+</html>
