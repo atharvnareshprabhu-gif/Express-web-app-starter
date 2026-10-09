@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Creator Rate"
+description = "A creator-facing Instagram analytics dashboard for tracking engagement across posts or profiles, estimating niche-adjusted sponsorship rates, exporting shareable report cards, and preparing brand pitches."
+version = "1.0.0"
+id = "artifacts/creator-rate"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 25492
+
+[services.development]
+run = "pnpm --filter @workspace/creator-rate run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/creator-rate", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/creator-rate/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "25492"
+BASE_PATH = "/"
