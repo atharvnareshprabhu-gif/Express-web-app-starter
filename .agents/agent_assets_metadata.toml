@@ -1,0 +1,16 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "vHii-Wb8tg3A6rtbBjCtD"
+uri = "file://artifacts/creator-rate/netlify-preview/index.html"
+type = "html"
+title = "Creator Rate — Netlify preview"
+description = "A single-file Creator Rate dashboard you can upload as index.html. Styles and app logic are inline; PNG export loads html2canvas from its CDN."
+logical_id = "05359075-abe6-491c-97cf-62d30e130f74"
+content_hash = "sha256:6bb45b44bf5ebf894e4f920a257fc0577dcab126956b1d1c8c60f2464ea8d34f"
+size = 56158
+mtime_ms = 1791644288549
+storage_uri = "gcs://replit-rams-assets-pike/rams/assets/repl:3f66728c-485d-46c3-8d0c-93e247797e69/05359075-abe6-491c-97cf-62d30e130f74/c356efd0-ade9-4bcf-bcb2-29ff71e62297"
+storage_version_token = "1791644307452921"
+content_type = "text/html"

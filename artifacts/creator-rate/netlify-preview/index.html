@@ -1,0 +1,1726 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#12131b" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 rx=%228%22 fill=%22%238c75ff%22/%3E%3Cpath d=%22M5 16h5l3-8 5 16 3-8h6%22 fill=%22none%22 stroke=%22white%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22/%3E%3C/svg%3E" />
+    <meta
+      name="description"
+      content="Calculate Instagram engagement, estimate a sponsored-post rate, and prepare a brand pitch."
+    />
+    <title>Creator Rate — Instagram Engagement Tool</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system,
+          BlinkMacSystemFont, "Segoe UI", sans-serif;
+        color: #eeedf5;
+        background: #12131b;
+        font-synthesis: none;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        --page: #12131b;
+        --panel: #1a1b26;
+        --panel-raised: #20212d;
+        --line: #30313f;
+        --muted: #9393a5;
+        --soft: #b6b5c4;
+        --white: #f4f2fb;
+        --violet: #8c75ff;
+        --violet-light: #b8a9ff;
+        --green: #69d7a0;
+        --red: #ff8b9a;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        min-width: 320px;
+        min-height: 100vh;
+        margin: 0;
+        background:
+          radial-gradient(ellipse at 80% 8%, rgb(107 83 198 / 14%), transparent 32rem),
+          radial-gradient(ellipse at 8% 30%, rgb(61 62 117 / 10%), transparent 28rem),
+          var(--page);
+      }
+
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+      }
+
+      button {
+        color: inherit;
+      }
+
+      .topbar {
+        min-height: 66px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 12px max(24px, calc((100vw - 1248px) / 2));
+        border-bottom: 1px solid #272833;
+        background: rgb(18 19 27 / 90%);
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--white);
+        font-size: 16px;
+        font-weight: 720;
+        letter-spacing: -0.045em;
+      }
+
+      .brand-mark {
+        width: 31px;
+        height: 31px;
+        display: grid;
+        place-items: center;
+        border: 1px solid rgb(255 255 255 / 17%);
+        border-radius: 10px;
+        background: linear-gradient(145deg, #a391ff, #654ee2);
+        box-shadow: 0 5px 18px rgb(116 91 237 / 26%);
+      }
+
+      .brand-mark svg {
+        width: 17px;
+        height: 17px;
+      }
+
+      .local-pill,
+      .header-badge,
+      .section-number,
+      .multiplier {
+        border: 1px solid #363648;
+        border-radius: 999px;
+        color: #bcb5ef;
+        background: #222132;
+        font-size: 10px;
+        font-weight: 650;
+        letter-spacing: 0.055em;
+      }
+
+      .local-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        color: #b7b6c5;
+        background: #191a24;
+        font-size: 11px;
+        letter-spacing: 0;
+      }
+
+      .local-dot,
+      .legend-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--green);
+      }
+
+      .dashboard {
+        width: min(100% - 40px, 1248px);
+        margin: 0 auto;
+        padding: 39px 0 30px;
+      }
+
+      .page-heading {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 22px;
+        margin-bottom: 24px;
+      }
+
+      .eyebrow,
+      .section-kicker,
+      .report-tag,
+      .report-metric span,
+      .offer-overline {
+        color: #a49acb;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 10px;
+        font-weight: 650;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        margin: 9px 0 7px;
+        color: var(--white);
+        font-size: clamp(29px, 4vw, 39px);
+        font-weight: 660;
+        letter-spacing: -0.055em;
+        line-height: 1.13;
+      }
+
+      .page-heading p,
+      .card-subtitle {
+        margin: 0;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.6;
+      }
+
+      .header-badge {
+        flex: 0 0 auto;
+        padding: 9px 12px;
+        border-color: #373746;
+        color: #a6a4b4;
+        background: transparent;
+        font-size: 9px;
+      }
+
+      .content-grid,
+      .lower-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.62fr) minmax(300px, 0.92fr);
+        align-items: start;
+        gap: 16px;
+      }
+
+      .side-stack,
+      .left-stack {
+        display: grid;
+        gap: 14px;
+      }
+
+      .card {
+        min-width: 0;
+        border: 1px solid #2d2e3b;
+        border-radius: 17px;
+        background: linear-gradient(145deg, rgb(31 32 44 / 97%), rgb(25 26 36 / 98%));
+        box-shadow: 0 12px 32px rgb(0 0 0 / 12%);
+        transition:
+          border-color 170ms ease,
+          transform 170ms ease,
+          box-shadow 170ms ease;
+      }
+
+      .card:hover {
+        border-color: #444158;
+        box-shadow: 0 15px 35px rgb(0 0 0 / 18%);
+      }
+
+      .snapshot-card,
+      .chart-card,
+      .history-card,
+      .pitch-card,
+      .report-panel {
+        padding: 23px;
+      }
+
+      .card-title-row,
+      .chart-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 14px;
+        margin-bottom: 21px;
+      }
+
+      .card-title {
+        margin: 6px 0 5px;
+        color: #eeedf6;
+        font-size: 17px;
+        font-weight: 620;
+        letter-spacing: -0.035em;
+      }
+
+      .card-subtitle {
+        font-size: 11px;
+      }
+
+      .section-number {
+        flex: 0 0 auto;
+        padding: 6px 9px;
+        border-radius: 8px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 9px;
+      }
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px 13px;
+      }
+
+      .field {
+        min-width: 0;
+      }
+
+      .field.full {
+        grid-column: 1 / -1;
+      }
+
+      .field label,
+      .pitch-output label {
+        display: block;
+        margin: 0 0 7px;
+        color: #c6c4d1;
+        font-size: 11px;
+        font-weight: 570;
+      }
+
+      .optional {
+        color: #7c7c8d;
+        font-weight: 400;
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        min-height: 43px;
+        padding: 10px 12px;
+        border: 1px solid #373846;
+        border-radius: 9px;
+        outline: none;
+        background: #191a24;
+        color: var(--white);
+        font-size: 12px;
+        transition:
+          border-color 150ms ease,
+          box-shadow 150ms ease,
+          background 150ms ease;
+      }
+
+      input::placeholder,
+      textarea::placeholder {
+        color: #727383;
+      }
+
+      input:focus,
+      select:focus,
+      textarea:focus {
+        border-color: #8877e8;
+        background: #1b1b28;
+        box-shadow: 0 0 0 3px rgb(133 113 228 / 15%);
+      }
+
+      select {
+        cursor: pointer;
+      }
+
+      textarea {
+        min-height: 86px;
+        resize: vertical;
+        line-height: 1.65;
+      }
+
+      .input-prefix {
+        position: relative;
+      }
+
+      .input-prefix span {
+        position: absolute;
+        top: 50%;
+        left: 13px;
+        color: #aaa6c2;
+        font-size: 12px;
+        transform: translateY(-50%);
+      }
+
+      .input-prefix input {
+        padding-left: 29px;
+      }
+
+      .field-hint {
+        margin-top: 6px;
+        color: #7e7e90;
+        font-size: 10px;
+        line-height: 1.5;
+      }
+
+      .error-text {
+        margin-top: 6px;
+        color: var(--red);
+        font-size: 10px;
+      }
+
+      .button-row,
+      .pitch-actions,
+      .export-row {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 9px;
+        margin-top: 19px;
+      }
+
+      .button {
+        min-height: 39px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 0 14px;
+        border: 1px solid transparent;
+        border-radius: 9px;
+        cursor: pointer;
+        font-size: 11px;
+        font-weight: 660;
+        transition:
+          transform 150ms ease,
+          border-color 150ms ease,
+          background 150ms ease,
+          box-shadow 150ms ease;
+      }
+
+      .button:hover:not(:disabled) {
+        transform: translateY(-1px);
+      }
+
+      .button:focus-visible,
+      .icon-button:focus-visible {
+        outline: 3px solid rgb(172 155 255 / 75%);
+        outline-offset: 3px;
+      }
+
+      .button:disabled {
+        cursor: not-allowed;
+        opacity: 0.48;
+      }
+
+      .button-primary {
+        border-color: #9b88ff;
+        background: linear-gradient(110deg, #8d77f5, #7055df);
+        color: white;
+        box-shadow: 0 6px 18px rgb(113 84 218 / 24%);
+      }
+
+      .button-primary:hover:not(:disabled) {
+        box-shadow: 0 9px 24px rgb(113 84 218 / 35%);
+      }
+
+      .button-secondary {
+        border-color: #404151;
+        background: #252633;
+        color: #dedce9;
+      }
+
+      .button-secondary:hover:not(:disabled) {
+        border-color: #625a83;
+        background: #2b2b3a;
+      }
+
+      .button svg {
+        width: 14px;
+        height: 14px;
+      }
+
+      .feedback,
+      .storage-status {
+        color: var(--green);
+        font-size: 10px;
+        line-height: 1.5;
+      }
+
+      .storage-status {
+        color: var(--red);
+      }
+
+      .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 11px;
+        margin-top: 13px;
+      }
+
+      .metric-card {
+        min-height: 113px;
+        padding: 17px;
+        background:
+          radial-gradient(ellipse at 96% 0%, rgb(121 100 222 / 11%), transparent 80px),
+          linear-gradient(145deg, #20212e, #1a1b26);
+      }
+
+      .metric-label {
+        color: #a3a2b2;
+        font-size: 10px;
+      }
+
+      .metric-value {
+        margin-top: 10px;
+        color: #f1eff9;
+        font-size: clamp(23px, 3vw, 30px);
+        font-weight: 660;
+        letter-spacing: -0.055em;
+        line-height: 1;
+      }
+
+      .metric-detail {
+        margin-top: 9px;
+        color: #777889;
+        font-size: 9px;
+        line-height: 1.5;
+      }
+
+      .offer-card {
+        border-color: #51477e;
+        background:
+          radial-gradient(circle at 100% 0%, rgb(134 113 227 / 24%), transparent 125px),
+          linear-gradient(140deg, #28243d, #201f30);
+      }
+
+      .offer-top,
+      .offer-foot {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 9px;
+      }
+
+      .offer-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        color: #aaa8b7;
+        font-size: 9px;
+      }
+
+      .offer-label svg {
+        width: 12px;
+        height: 12px;
+        color: #c4b9ff;
+      }
+
+      .offer-overline {
+        color: #c5baff;
+      }
+
+      .offer-value {
+        margin: 15px 0 12px;
+        color: white;
+        font-size: 34px;
+        font-weight: 700;
+        letter-spacing: -0.065em;
+      }
+
+      .offer-foot {
+        padding-top: 11px;
+        border-top: 1px solid rgb(210 202 255 / 11%);
+        color: #9e9cad;
+        font-size: 9px;
+      }
+
+      .multiplier {
+        padding: 5px 7px;
+        border-radius: 7px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 9px;
+        white-space: nowrap;
+      }
+
+      .chart-head {
+        align-items: center;
+        margin-bottom: 8px;
+      }
+
+      .chart-head .card-title {
+        margin-bottom: 0;
+      }
+
+      .chart-select {
+        width: auto;
+        min-width: 90px;
+        min-height: 33px;
+        padding: 6px 26px 6px 9px;
+        color: #cfccdf;
+        font-size: 10px;
+      }
+
+      .chart-wrap {
+        width: 100%;
+        height: 185px;
+        margin-top: 4px;
+      }
+
+      .chart-wrap svg {
+        width: 100%;
+        height: 100%;
+        overflow: visible;
+      }
+
+      .chart-grid {
+        stroke: #343541;
+        stroke-dasharray: 3 5;
+        stroke-width: 1;
+      }
+
+      .chart-label {
+        fill: #818292;
+        font-family: inherit;
+        font-size: 9px;
+      }
+
+      .chart-line {
+        fill: none;
+        stroke: #a18cff;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-width: 2.6;
+      }
+
+      .chart-area {
+        fill: url(#rateFill);
+      }
+
+      .chart-point {
+        fill: #c0b3ff;
+        stroke: #252331;
+        stroke-width: 2.5;
+      }
+
+      .chart-empty,
+      .empty-history {
+        display: grid;
+        min-height: 142px;
+        place-items: center;
+        padding: 18px;
+        border: 1px dashed #393a49;
+        border-radius: 12px;
+        color: #88899a;
+        font-size: 10px;
+        line-height: 1.7;
+        text-align: center;
+      }
+
+      .chart-empty {
+        margin-top: 11px;
+      }
+
+      .chart-legend {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        color: #a8a7b7;
+        font-size: 10px;
+      }
+
+      .legend-dot {
+        background: #a18cff;
+      }
+
+      .history-card {
+        padding-bottom: 18px;
+      }
+
+      .history-card .card-title-row {
+        margin-bottom: 14px;
+      }
+
+      .history-list {
+        display: grid;
+      }
+
+      .history-row {
+        display: grid;
+        grid-template-columns: 32px minmax(0, 1fr) auto auto;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 0;
+        border-top: 1px solid #2c2d39;
+      }
+
+      .history-avatar {
+        width: 30px;
+        height: 30px;
+        display: grid;
+        place-items: center;
+        border: 1px solid #524879;
+        border-radius: 9px;
+        background: linear-gradient(145deg, #3b345d, #282638);
+        color: #d4caff;
+        font-size: 10px;
+        font-weight: 700;
+      }
+
+      .history-name {
+        overflow: hidden;
+        color: #dedce8;
+        font-size: 10px;
+        font-weight: 620;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .history-handle {
+        color: #818191;
+        font-weight: 400;
+      }
+
+      .history-date {
+        margin-top: 4px;
+        color: #818191;
+        font-size: 9px;
+      }
+
+      .history-rate {
+        color: #d2c9ff;
+        font-size: 11px;
+        font-weight: 700;
+        text-align: right;
+        white-space: nowrap;
+      }
+
+      .history-rate small {
+        display: block;
+        margin-top: 3px;
+        color: #808191;
+        font-size: 8px;
+        font-weight: 400;
+      }
+
+      .row-actions {
+        display: flex;
+        gap: 4px;
+      }
+
+      .icon-button {
+        width: 28px;
+        height: 28px;
+        display: grid;
+        place-items: center;
+        padding: 0;
+        border: 1px solid transparent;
+        border-radius: 7px;
+        background: transparent;
+        color: #9c9bac;
+        cursor: pointer;
+        transition:
+          color 150ms ease,
+          background 150ms ease,
+          border-color 150ms ease;
+      }
+
+      .icon-button:hover {
+        border-color: #444252;
+        background: #282834;
+        color: #ddd7ff;
+      }
+
+      .icon-button.delete:hover {
+        border-color: #70424c;
+        color: #ff9aa7;
+      }
+
+      .icon-button svg {
+        width: 13px;
+        height: 13px;
+      }
+
+      .empty-history {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        min-height: 105px;
+      }
+
+      .lower-grid {
+        margin-top: 15px;
+      }
+
+      .pitch-output {
+        margin-top: 17px;
+      }
+
+      #pitchDraft {
+        min-height: 200px;
+        font-size: 11px;
+      }
+
+      .report-surface {
+        position: relative;
+        overflow: hidden;
+        margin-top: 16px;
+        padding: 20px;
+        border: 1px solid #45415b;
+        border-radius: 13px;
+        background:
+          radial-gradient(circle at 100% 0%, rgb(135 112 226 / 24%), transparent 190px),
+          linear-gradient(145deg, #252339, #1b1c28 80%);
+      }
+
+      .report-brand {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding-bottom: 14px;
+        border-bottom: 1px solid rgb(219 212 255 / 12%);
+      }
+
+      .report-brand .brand {
+        font-size: 12px;
+      }
+
+      .report-brand .brand-mark {
+        width: 27px;
+        height: 27px;
+        border-radius: 8px;
+      }
+
+      .report-brand .brand-mark svg {
+        width: 14px;
+        height: 14px;
+      }
+
+      .report-tag {
+        padding: 6px 8px;
+        border: 1px solid #474358;
+        border-radius: 999px;
+        background: #2b293d;
+        color: #c0b4ff;
+        font-size: 8px;
+        letter-spacing: 0.09em;
+      }
+
+      .report-person {
+        margin-top: 17px;
+        color: #f2f0fa;
+        font-size: 19px;
+        font-weight: 670;
+        letter-spacing: -0.04em;
+      }
+
+      .report-handle {
+        margin-top: 4px;
+        color: #aaa7bb;
+        font-size: 10px;
+      }
+
+      .report-metrics {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+        margin-top: 20px;
+        padding: 14px 0;
+        border-top: 1px solid rgb(219 212 255 / 10%);
+        border-bottom: 1px solid rgb(219 212 255 / 10%);
+      }
+
+      .report-metric span {
+        color: #9692aa;
+        font-size: 7px;
+        letter-spacing: 0.11em;
+      }
+
+      .report-metric strong {
+        display: block;
+        margin-top: 6px;
+        color: #f1effa;
+        font-size: 17px;
+        font-weight: 670;
+      }
+
+      .report-offer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-top: 15px;
+        color: #b4b0c3;
+        font-size: 9px;
+        line-height: 1.5;
+      }
+
+      .report-offer strong {
+        color: #d3c9ff;
+        font-size: 18px;
+        white-space: nowrap;
+      }
+
+      .report-note {
+        margin-top: 14px;
+        color: #888698;
+        font-size: 8px;
+        line-height: 1.5;
+      }
+
+      .status-message {
+        margin-top: 12px;
+        padding: 9px 11px;
+        border: 1px solid #3b5748;
+        border-radius: 8px;
+        background: #1c2a24;
+        color: #9ee3bc;
+        font-size: 10px;
+        line-height: 1.5;
+      }
+
+      .status-message.error {
+        border-color: #603943;
+        background: #2c2027;
+        color: #ffa0aa;
+      }
+
+      .footer-note {
+        padding: 21px 0 0;
+        color: #858494;
+        font-size: 9px;
+        text-align: center;
+      }
+
+      .footer-note strong {
+        color: #b9b1da;
+        font-weight: 560;
+      }
+
+      @media (max-width: 820px) {
+        .content-grid,
+        .lower-grid {
+          grid-template-columns: minmax(0, 1fr);
+        }
+
+        .side-stack {
+          grid-template-columns: minmax(0, 1fr);
+        }
+
+        .page-heading {
+          align-items: flex-start;
+        }
+      }
+
+      @media (max-width: 540px) {
+        .topbar {
+          min-height: 58px;
+          padding: 10px 15px;
+        }
+
+        .brand {
+          font-size: 14px;
+        }
+
+        .local-pill {
+          padding: 7px 9px;
+          font-size: 9px;
+        }
+
+        .dashboard {
+          width: min(100% - 28px, 1248px);
+          padding-top: 27px;
+        }
+
+        .page-heading {
+          display: block;
+          margin-bottom: 19px;
+        }
+
+        .page-heading p {
+          max-width: 390px;
+          font-size: 12px;
+        }
+
+        .header-badge {
+          display: inline-flex;
+          margin-top: 13px;
+          font-size: 8px;
+        }
+
+        .snapshot-card,
+        .chart-card,
+        .history-card,
+        .pitch-card,
+        .report-panel {
+          padding: 17px;
+        }
+
+        .form-grid {
+          gap: 13px 10px;
+        }
+
+        .metrics-grid {
+          gap: 9px;
+        }
+
+        .metric-card {
+          min-height: 105px;
+          padding: 13px;
+        }
+
+        .metric-value {
+          font-size: 24px;
+        }
+
+        .history-row {
+          grid-template-columns: 29px minmax(0, 1fr) auto;
+          gap: 8px;
+        }
+
+        .history-avatar {
+          width: 28px;
+          height: 28px;
+        }
+
+        .row-actions {
+          grid-column: 2 / -1;
+          justify-content: flex-end;
+          margin-top: -3px;
+        }
+
+        .report-surface {
+          padding: 15px;
+        }
+
+        .report-metric strong {
+          font-size: 14px;
+        }
+      }
+
+      @media (max-width: 370px) {
+        .form-grid {
+          grid-template-columns: minmax(0, 1fr);
+        }
+
+        .field.full {
+          grid-column: auto;
+        }
+
+        .card-title-row,
+        .chart-head {
+          gap: 8px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          scroll-behavior: auto !important;
+          transition-duration: 0.01ms !important;
+          animation-duration: 0.01ms !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M3 12h4l2.2-6 4.1 12 2.2-6H21" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </span>
+        <span>creator rate</span>
+      </div>
+      <div class="local-pill"><span class="local-dot" aria-hidden="true"></span><span>Private · stored on this device</span></div>
+    </header>
+
+    <main class="dashboard">
+      <section class="page-heading">
+        <div>
+          <div class="eyebrow">Creator workspace / 01</div>
+          <h1>Your numbers, made pitch-ready.</h1>
+          <p>Build a clear snapshot of your Instagram performance and what a partnership could look like.</p>
+        </div>
+        <span class="header-badge">No account connection required</span>
+      </section>
+
+      <div id="storageStatus" class="storage-status" role="alert" hidden></div>
+
+      <div class="content-grid">
+        <section class="left-stack" aria-label="Creator metrics">
+          <form id="snapshotForm" class="card snapshot-card" novalidate>
+            <div class="card-title-row">
+              <div>
+                <div class="section-kicker">Profile snapshot</div>
+                <h2 class="card-title">Enter your latest numbers</h2>
+                <p class="card-subtitle">A snapshot you provide. Nothing is pulled from Instagram.</p>
+              </div>
+              <span class="section-number">01 / INPUT</span>
+            </div>
+
+            <div class="form-grid">
+              <div class="field">
+                <label for="creatorName">Creator name</label>
+                <input id="creatorName" name="creatorName" autocomplete="name" placeholder="e.g. Riley Chen" required />
+                <div class="error-text" id="errorCreatorName" aria-live="polite"></div>
+              </div>
+              <div class="field">
+                <label for="handle">Instagram handle</label>
+                <input id="handle" name="handle" placeholder="@yourhandle" required />
+                <div class="error-text" id="errorHandle" aria-live="polite"></div>
+              </div>
+              <div class="field">
+                <label for="niche">Creator niche</label>
+                <select id="niche" name="niche">
+                  <option value="Finance">Finance · 1.5×</option>
+                  <option value="Tech">Tech · 1.5×</option>
+                  <option value="Fashion" selected>Fashion · 1.0×</option>
+                  <option value="Comedy">Comedy · 0.75×</option>
+                  <option value="Memes">Memes · 0.5×</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="followers">Followers</label>
+                <input id="followers" name="followers" type="number" min="1" step="1" inputmode="numeric" placeholder="e.g. 24500" required />
+                <div class="error-text" id="errorFollowers" aria-live="polite"></div>
+              </div>
+              <div class="field">
+                <label for="avgLikes">Average likes / post</label>
+                <input id="avgLikes" name="avgLikes" type="number" min="0" step="1" inputmode="numeric" placeholder="e.g. 1840" />
+                <div class="error-text" id="errorAvgLikes" aria-live="polite"></div>
+              </div>
+              <div class="field">
+                <label for="avgComments">Average comments / post</label>
+                <input id="avgComments" name="avgComments" type="number" min="0" step="1" inputmode="numeric" placeholder="e.g. 96" />
+                <div class="error-text" id="errorAvgComments" aria-live="polite"></div>
+              </div>
+              <div class="field full">
+                <label for="baseRate">Your baseline rate per sponsored post <span class="optional">· optional</span></label>
+                <div class="input-prefix"><span aria-hidden="true">$</span><input id="baseRate" name="baseRate" type="number" min="0" step="0.01" inputmode="decimal" placeholder="e.g. 650" /></div>
+                <div class="field-hint">Your starting point. The selected niche multiplier is applied to this amount.</div>
+                <div class="error-text" id="errorBaseRate" aria-live="polite"></div>
+              </div>
+            </div>
+
+            <div class="button-row">
+              <button class="button button-primary" type="submit">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 4h12l3 3v13H4V4h1Zm2 0v6h10V4M8 20v-7h8v7" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" /></svg>
+                Save snapshot
+              </button>
+              <span id="saveFeedback" class="feedback" role="status"></span>
+            </div>
+          </form>
+
+          <div class="metrics-grid" aria-label="Calculated profile metrics">
+            <article class="card metric-card">
+              <div class="metric-label">Engagement rate</div>
+              <div class="metric-value" id="engagementValue" aria-live="polite">—</div>
+              <div class="metric-detail">((likes + comments) ÷ followers) × 100</div>
+            </article>
+            <article class="card metric-card">
+              <div class="metric-label">Average interactions</div>
+              <div class="metric-value" id="interactionsValue">—</div>
+              <div class="metric-detail">Likes plus comments per post</div>
+            </article>
+            <article class="card metric-card">
+              <div class="metric-label">Community size</div>
+              <div class="metric-value" id="followersValue">—</div>
+              <div class="metric-detail">Instagram followers</div>
+            </article>
+            <article class="card metric-card offer-card">
+              <div class="offer-top">
+                <span class="offer-overline">Rate estimate</span>
+                <span class="offer-label"><span aria-hidden="true">$</span> per sponsored post</span>
+              </div>
+              <div class="offer-value" id="offerValue" aria-live="polite">—</div>
+              <div class="offer-foot">
+                <span id="offerDetail">Add a baseline rate to estimate</span>
+                <span class="multiplier" id="multiplierValue">1× niche factor</span>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <aside class="side-stack">
+          <section class="card chart-card">
+            <div class="chart-head">
+              <div>
+                <div class="section-kicker">Saved snapshots</div>
+                <h2 class="card-title">Engagement over time</h2>
+              </div>
+              <select id="chartProfile" class="chart-select" aria-label="Choose creator history" hidden></select>
+              <span class="chart-legend"><i class="legend-dot" aria-hidden="true"></i>Rate</span>
+            </div>
+            <div id="chart" class="chart-empty" data-testid="empty-engagement-chart">
+              Your saved snapshots will appear here. Save at least two for one creator to see how engagement changes.
+            </div>
+          </section>
+
+          <section class="card history-card">
+            <div class="card-title-row">
+              <div>
+                <div class="section-kicker">Your browser</div>
+                <h2 class="card-title">Snapshot history</h2>
+              </div>
+              <span class="section-number" id="historyCount">0 SAVED</span>
+            </div>
+            <div id="historyList" class="history-list"></div>
+          </section>
+        </aside>
+      </div>
+
+      <div class="lower-grid">
+        <section class="card pitch-card">
+          <div class="card-title-row">
+            <div>
+              <div class="section-kicker">Partnership outreach</div>
+              <h2 class="card-title">Draft your brand pitch</h2>
+              <p class="card-subtitle">A practical first draft, grounded in the numbers above.</p>
+            </div>
+            <span class="section-number">02 / WRITE</span>
+          </div>
+          <div class="field">
+            <label for="brandName">Brand name <span class="optional">· optional</span></label>
+            <input id="brandName" placeholder="e.g. Northstar Skincare" />
+          </div>
+          <div class="field" style="margin-top:13px">
+            <label for="campaign">Campaign details <span class="optional">· optional</span></label>
+            <textarea id="campaign" placeholder="Product launch, key message, timing, or a creative idea…"></textarea>
+          </div>
+          <div class="pitch-actions">
+            <button id="generatePitch" class="button button-primary" type="button">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m12 3 1.4 5.6L19 10l-5.6 1.4L12 17l-1.4-5.6L5 10l5.6-1.4L12 3Zm7 11 .7 2.3L22 17l-2.3.7L19 20l-.7-2.3L16 17l2.3-.7L19 14Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" /></svg>
+              Generate pitch
+            </button>
+            <button id="copyPitch" class="button button-secondary" type="button" hidden>
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.7" /><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" stroke="currentColor" stroke-width="1.7" /></svg>
+              Copy pitch
+            </button>
+          </div>
+          <div id="pitchFeedback" class="status-message" role="status" hidden></div>
+          <div id="pitchOutput" class="pitch-output" hidden>
+            <label for="pitchDraft" class="section-kicker">Editable pitch draft</label>
+            <textarea id="pitchDraft" aria-label="Editable brand pitch draft"></textarea>
+          </div>
+        </section>
+
+        <section class="card report-panel">
+          <div class="card-title-row">
+            <div>
+              <div class="section-kicker">Shareable snapshot</div>
+              <h2 class="card-title">Creator report card</h2>
+            </div>
+            <span class="section-number">03 / EXPORT</span>
+          </div>
+
+          <div id="reportCard" class="report-surface">
+            <div class="report-brand">
+              <span class="brand">
+                <span class="brand-mark" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none"><path d="M3 12h4l2.2-6 4.1 12 2.2-6H21" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                </span>
+                <span>creator rate</span>
+              </span>
+              <span class="report-tag">Creator snapshot</span>
+            </div>
+            <div id="reportContent">
+              <p style="margin:19px 0 5px;color:#aaa8b8;font-size:11px;line-height:1.6">Your report card will fill in when you add a creator name and follower count.</p>
+            </div>
+            <div class="report-note">Estimate uses your stated baseline rate and published niche multiplier. For planning only.</div>
+          </div>
+
+          <div class="export-row">
+            <button id="downloadReport" class="button button-secondary" type="button" disabled>
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 17v3h14v-3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" /></svg>
+              Download PNG
+            </button>
+          </div>
+          <div id="exportFeedback" class="status-message" role="status" hidden></div>
+        </section>
+      </div>
+
+      <footer class="footer-note"><strong>Creator Rate</strong> · Your data stays in this browser. Rate estimates are transparent benchmarks, not guarantees.</footer>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script>
+      (() => {
+        "use strict";
+
+        const STORAGE_KEY = "creator-rate-snapshots-v1";
+        const MULTIPLIERS = {
+          Finance: 1.5,
+          Tech: 1.5,
+          Fashion: 1,
+          Comedy: 0.75,
+          Memes: 0.5,
+        };
+        const historyList = document.getElementById("historyList");
+        const chart = document.getElementById("chart");
+        const chartProfile = document.getElementById("chartProfile");
+        const storageStatus = document.getElementById("storageStatus");
+        const saveFeedback = document.getElementById("saveFeedback");
+        let snapshots = [];
+        let selectedChartHandle = "";
+
+        const getElement = (id) => document.getElementById(id);
+        const numberFrom = (id) => {
+          const raw = getElement(id).value;
+          return raw.trim() === "" ? 0 : Number(raw);
+        };
+        const escapeHtml = (value) =>
+          String(value).replace(/[&<>"']/g, (character) => ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;",
+          })[character]);
+        const compact = (value) =>
+          new Intl.NumberFormat("en-US", {
+            notation: "compact",
+            maximumFractionDigits: 1,
+          }).format(value);
+        const money = (value) =>
+          new Intl.NumberFormat("en-US", {
+            style: "currency",
+            currency: "USD",
+            maximumFractionDigits: 0,
+          }).format(value);
+        const engagementRate = (snapshot) =>
+          snapshot.followers > 0
+            ? ((snapshot.avgLikes + snapshot.avgComments) / snapshot.followers) * 100
+            : 0;
+        const currentSnapshot = () => ({
+          creatorName: getElement("creatorName").value.trim(),
+          handle: getElement("handle").value.trim().replace(/^@/, ""),
+          niche: getElement("niche").value,
+          followers: numberFrom("followers"),
+          avgLikes: numberFrom("avgLikes"),
+          avgComments: numberFrom("avgComments"),
+          baseRate: numberFrom("baseRate"),
+        });
+        const multiplierFor = (niche) => MULTIPLIERS[niche] ?? 1;
+
+        function validSnapshot(value) {
+          return value !== null
+            && typeof value === "object"
+            && typeof value.id === "string"
+            && typeof value.createdAt === "string"
+            && Number.isFinite(new Date(value.createdAt).getTime())
+            && typeof value.creatorName === "string"
+            && typeof value.handle === "string"
+            && Object.hasOwn(MULTIPLIERS, value.niche)
+            && ["followers", "avgLikes", "avgComments", "baseRate"].every(
+              (key) => Number.isFinite(value[key]) && value[key] >= 0,
+            );
+        }
+
+        function showStorageError(message) {
+          storageStatus.textContent = message;
+          storageStatus.hidden = !message;
+        }
+
+        function persist(next) {
+          try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+            snapshots = next;
+            showStorageError("");
+            renderHistory();
+            renderChart();
+            return true;
+          } catch {
+            showStorageError("Could not save in this browser. Check available storage or privacy settings.");
+            return false;
+          }
+        }
+
+        function validate() {
+          const data = currentSnapshot();
+          const errors = {
+            creatorName: data.creatorName ? "" : "Enter a creator name.",
+            handle: data.handle ? "" : "Enter an Instagram handle.",
+            followers:
+              Number.isFinite(data.followers) && data.followers > 0
+                ? ""
+                : "Followers must be greater than 0.",
+            avgLikes:
+              Number.isFinite(data.avgLikes) && data.avgLikes >= 0
+                ? ""
+                : "Enter a non-negative number.",
+            avgComments:
+              Number.isFinite(data.avgComments) && data.avgComments >= 0
+                ? ""
+                : "Enter a non-negative number.",
+            baseRate:
+              Number.isFinite(data.baseRate) && data.baseRate >= 0
+                ? ""
+                : "Enter a non-negative amount.",
+          };
+          const ids = {
+            creatorName: "errorCreatorName",
+            handle: "errorHandle",
+            followers: "errorFollowers",
+            avgLikes: "errorAvgLikes",
+            avgComments: "errorAvgComments",
+            baseRate: "errorBaseRate",
+          };
+          let valid = true;
+          Object.entries(errors).forEach(([key, message]) => {
+            getElement(ids[key]).textContent = message;
+            if (message) valid = false;
+          });
+          return valid;
+        }
+
+        function updateReport(data, rate, offer, multiplier) {
+          const content = getElement("reportContent");
+          if (!data.creatorName || data.followers <= 0) {
+            content.innerHTML =
+              '<p style="margin:19px 0 5px;color:#aaa8b8;font-size:11px;line-height:1.6">Your report card will fill in when you add a creator name and follower count.</p>';
+            getElement("downloadReport").disabled = true;
+            return;
+          }
+
+          getElement("downloadReport").disabled = false;
+          const interactionCount = data.avgLikes + data.avgComments;
+          const offerLabel = data.baseRate > 0
+            ? `Estimated sponsored-post offer · ${multiplier}× niche factor`
+            : "Sponsored-post rate · baseline not set";
+          const offerValue = data.baseRate > 0 ? money(offer) : "On request";
+          content.innerHTML = `
+            <div class="report-person">${escapeHtml(data.creatorName)}</div>
+            <div class="report-handle">@${escapeHtml(data.handle)} · ${escapeHtml(data.niche)}</div>
+            <div class="report-metrics">
+              <div class="report-metric"><span>Followers</span><strong>${escapeHtml(compact(data.followers))}</strong></div>
+              <div class="report-metric"><span>Engagement</span><strong>${rate.toFixed(2)}%</strong></div>
+              <div class="report-metric"><span>Avg. interactions</span><strong>${escapeHtml(compact(interactionCount))}</strong></div>
+            </div>
+            <div class="report-offer"><span>${offerLabel}</span><strong>${offerValue}</strong></div>`;
+        }
+
+        function renderLiveMetrics() {
+          const data = currentSnapshot();
+          const rate = engagementRate(data);
+          const multiplier = multiplierFor(data.niche);
+          const offer = data.baseRate * multiplier;
+          const hasProfile = data.creatorName.length > 0 && data.followers > 0;
+          const hasRate = Number.isFinite(data.baseRate) && data.baseRate > 0;
+
+          getElement("engagementValue").textContent =
+            hasProfile ? `${rate.toFixed(2)}%` : "—";
+          getElement("interactionsValue").textContent =
+            hasProfile ? compact(data.avgLikes + data.avgComments) : "—";
+          getElement("followersValue").textContent =
+            hasProfile ? compact(data.followers) : "—";
+          getElement("offerValue").textContent = hasRate ? money(offer) : "—";
+          getElement("offerDetail").textContent = hasRate
+            ? `Baseline ${money(data.baseRate)} × ${data.niche}`
+            : "Add a baseline rate to estimate";
+          getElement("multiplierValue").textContent =
+            `${multiplier}× niche factor`;
+          updateReport(data, rate, offer, multiplier);
+        }
+
+        function formatDate(value) {
+          return new Date(value).toLocaleDateString(undefined, {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+          });
+        }
+
+        function initials(name) {
+          return name.trim().split(/\s+/).slice(0, 2)
+            .map((part) => part[0]?.toUpperCase() || "").join("") || "CR";
+        }
+
+        function renderHistory() {
+          getElement("historyCount").textContent = `${snapshots.length} SAVED`;
+          if (snapshots.length === 0) {
+            historyList.innerHTML =
+              '<div class="empty-history">No snapshots saved yet. Add your current numbers to start a private history. No tracking data is made up.</div>';
+            return;
+          }
+
+          historyList.innerHTML = snapshots.map((snapshot) => `
+            <article class="history-row">
+              <div class="history-avatar" aria-hidden="true">${escapeHtml(initials(snapshot.creatorName))}</div>
+              <div class="history-info">
+                <div class="history-name">${escapeHtml(snapshot.creatorName)} <span class="history-handle">@${escapeHtml(snapshot.handle)}</span></div>
+                <div class="history-date">${escapeHtml(formatDate(snapshot.createdAt))} · ${escapeHtml(snapshot.niche)}</div>
+              </div>
+              <div class="history-rate">${engagementRate(snapshot).toFixed(2)}%<small>${escapeHtml(compact(snapshot.followers))} followers</small></div>
+              <div class="row-actions">
+                <button class="icon-button" type="button" title="Load snapshot" aria-label="Load ${escapeHtml(snapshot.creatorName)} snapshot" data-action="load" data-id="${escapeHtml(snapshot.id)}">
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                </button>
+                <button class="icon-button delete" type="button" title="Delete snapshot" aria-label="Delete ${escapeHtml(snapshot.creatorName)} snapshot" data-action="delete" data-id="${escapeHtml(snapshot.id)}">
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h16M10 11v6m4-6v6M6 7l1 13h10l1-13M9 7V4h6v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                </button>
+              </div>
+            </article>`).join("");
+        }
+
+        function createSvgElement(name, attributes = {}) {
+          const element = document.createElementNS("http://www.w3.org/2000/svg", name);
+          Object.entries(attributes).forEach(([key, value]) =>
+            element.setAttribute(key, String(value)),
+          );
+          return element;
+        }
+
+        function renderChart() {
+          const handles = [...new Set(snapshots.map((snapshot) => snapshot.handle))];
+          chartProfile.hidden = handles.length < 2;
+          chartProfile.innerHTML = handles.map((handle) => {
+            const creator = snapshots.find((item) => item.handle === handle);
+            return `<option value="${escapeHtml(handle)}">${escapeHtml(`@${handle} · ${creator.creatorName}`)}</option>`;
+          }).join("");
+
+          if (!handles.includes(selectedChartHandle)) {
+            selectedChartHandle = handles[0] || "";
+          }
+          chartProfile.value = selectedChartHandle;
+          const rows = snapshots
+            .filter((snapshot) => snapshot.handle === selectedChartHandle)
+            .slice()
+            .reverse();
+
+          if (rows.length < 2) {
+            chart.className = "chart-empty";
+            chart.setAttribute("data-testid", "empty-engagement-chart");
+            chart.textContent = rows.length === 0
+              ? "Your saved snapshots will appear here. Save at least two for one creator to see how engagement changes."
+              : `Save another snapshot for @${rows[0].handle} to compare engagement over time.`;
+            return;
+          }
+
+          chart.className = "chart-wrap";
+          chart.setAttribute("data-testid", "chart-engagement-history");
+          chart.replaceChildren();
+          const svg = createSvgElement("svg", {
+            viewBox: "0 0 600 210",
+            role: "img",
+            "aria-label": `Engagement rate history for @${rows[0].handle}`,
+          });
+          const defs = createSvgElement("defs");
+          const gradient = createSvgElement("linearGradient", {
+            id: "rateFill", x1: "0", y1: "0", x2: "0", y2: "1",
+          });
+          gradient.append(
+            createSvgElement("stop", { offset: "0%", "stop-color": "#a18cff", "stop-opacity": "0.31" }),
+            createSvgElement("stop", { offset: "100%", "stop-color": "#a18cff", "stop-opacity": "0" }),
+          );
+          defs.append(gradient);
+          svg.append(defs);
+
+          const width = 600;
+          const height = 210;
+          const left = 44;
+          const right = 586;
+          const top = 16;
+          const bottom = 174;
+          const values = rows.map(engagementRate);
+          const maximum = Math.max(...values, 1) * 1.2;
+
+          for (let index = 0; index <= 3; index += 1) {
+            const y = top + ((bottom - top) * index) / 3;
+            const value = maximum * (1 - index / 3);
+            svg.append(
+              createSvgElement("line", {
+                x1: left, y1: y, x2: right, y2: y, class: "chart-grid",
+              }),
+            );
+            const label = createSvgElement("text", {
+              x: 1, y: y + 3, class: "chart-label",
+            });
+            label.textContent = `${value.toFixed(value < 1 ? 2 : 1)}%`;
+            svg.append(label);
+          }
+
+          const points = values.map((value, index) => {
+            const x = rows.length === 1
+              ? (left + right) / 2
+              : left + ((right - left) * index) / (rows.length - 1);
+            const y = bottom - (value / maximum) * (bottom - top);
+            return { x, y, value, snapshot: rows[index] };
+          });
+          const linePoints = points.map((point) => `${point.x},${point.y}`).join(" ");
+          const areaPath = `M ${points[0].x},${bottom} L ${linePoints.replaceAll(" ", " L ")} L ${points[points.length - 1].x},${bottom} Z`;
+          svg.append(
+            createSvgElement("path", { d: areaPath, class: "chart-area" }),
+            createSvgElement("polyline", { points: linePoints, class: "chart-line" }),
+          );
+
+          points.forEach((point, index) => {
+            const circle = createSvgElement("circle", {
+              cx: point.x, cy: point.y, r: 4, class: "chart-point",
+            });
+            const title = createSvgElement("title");
+            title.textContent = `${point.value.toFixed(2)}% · ${formatDate(point.snapshot.createdAt)}`;
+            circle.append(title);
+            svg.append(circle);
+
+            if (index === 0 || index === points.length - 1) {
+              const label = createSvgElement("text", {
+                x: point.x,
+                y: 198,
+                class: "chart-label",
+                "text-anchor": index === 0 ? "start" : "end",
+              });
+              label.textContent = new Date(point.snapshot.createdAt).toLocaleDateString(
+                undefined,
+                { month: "short", day: "numeric" },
+              );
+              svg.append(label);
+            }
+          });
+          chart.append(svg);
+        }
+
+        function loadSnapshot(snapshot) {
+          getElement("creatorName").value = snapshot.creatorName;
+          getElement("handle").value = snapshot.handle;
+          getElement("niche").value = snapshot.niche;
+          getElement("followers").value = String(snapshot.followers);
+          getElement("avgLikes").value = String(snapshot.avgLikes);
+          getElement("avgComments").value = String(snapshot.avgComments);
+          getElement("baseRate").value = String(snapshot.baseRate);
+          saveFeedback.textContent = `Loaded ${snapshot.creatorName} into the snapshot form.`;
+          renderLiveMetrics();
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+
+        function setFeedback(element, message, isError = false) {
+          element.textContent = message;
+          element.hidden = !message;
+          element.classList.toggle("error", isError);
+        }
+
+        document.querySelectorAll("#snapshotForm input, #snapshotForm select")
+          .forEach((input) => input.addEventListener("input", () => {
+            saveFeedback.textContent = "";
+            renderLiveMetrics();
+          }));
+
+        getElement("snapshotForm").addEventListener("submit", (event) => {
+          event.preventDefault();
+          saveFeedback.textContent = "";
+          if (!validate()) return;
+          const data = currentSnapshot();
+          const snapshot = {
+            ...data,
+            id: typeof crypto !== "undefined" && crypto.randomUUID
+              ? crypto.randomUUID()
+              : `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+            createdAt: new Date().toISOString(),
+          };
+          if (persist([snapshot, ...snapshots])) {
+            saveFeedback.textContent = "Snapshot saved in this browser.";
+          }
+          renderLiveMetrics();
+        });
+
+        historyList.addEventListener("click", (event) => {
+          const button = event.target.closest("button[data-action]");
+          if (!button) return;
+          const snapshot = snapshots.find((item) => item.id === button.dataset.id);
+          if (!snapshot) return;
+
+          if (button.dataset.action === "load") {
+            loadSnapshot(snapshot);
+          } else if (button.dataset.action === "delete") {
+            if (!window.confirm(`Delete the saved snapshot for ${snapshot.creatorName}? This cannot be undone.`)) return;
+            if (persist(snapshots.filter((item) => item.id !== snapshot.id))) {
+              saveFeedback.textContent = "Saved snapshot deleted.";
+            }
+          }
+        });
+
+        chartProfile.addEventListener("change", () => {
+          selectedChartHandle = chartProfile.value;
+          renderChart();
+        });
+
+        getElement("generatePitch").addEventListener("click", () => {
+          const data = currentSnapshot();
+          if (!data.creatorName || !data.handle || data.followers <= 0) {
+            setFeedback(
+              getElement("pitchFeedback"),
+              "Add a creator name, Instagram handle, and followers above before drafting.",
+              true,
+            );
+            return;
+          }
+          const brand = getElement("brandName").value.trim() || "your brand";
+          const campaign = getElement("campaign").value.trim();
+          const rate = engagementRate(data);
+          const multiplier = multiplierFor(data.niche);
+          const priceSentence = data.baseRate > 0
+            ? `Based on my ${data.niche} niche benchmark (${multiplier}×) and a baseline rate of ${money(data.baseRate)}, my estimated sponsored-post offer is ${money(data.baseRate * multiplier)}.`
+            : "My sponsored-post rates are available on request.";
+          const campaignSentence = campaign
+            ? `\n\nFor ${campaign}, I’d love to shape a concept that feels natural to my audience and supports your campaign goals.`
+            : "";
+          getElement("pitchDraft").value =
+            `Hi ${brand} team,\n\nI’m ${data.creatorName} (@${data.handle}), a ${data.niche.toLowerCase()} creator connecting with a community of ${compact(data.followers)} on Instagram. My recent average is ${compact(data.avgLikes)} likes and ${compact(data.avgComments)} comments per post, for an engagement rate of ${rate.toFixed(2)}%.\n\nI’d love to explore a sponsored post together. ${priceSentence}${campaignSentence}\n\nIf this feels like a fit, I’d be happy to talk through timing, creative direction, and deliverables.\n\nBest,\n${data.creatorName}`;
+          getElement("pitchOutput").hidden = false;
+          getElement("copyPitch").hidden = false;
+          setFeedback(getElement("pitchFeedback"), "Draft ready. Make any edits before copying.");
+        });
+
+        getElement("copyPitch").addEventListener("click", async () => {
+          const pitch = getElement("pitchDraft");
+          try {
+            await navigator.clipboard.writeText(pitch.value);
+            setFeedback(getElement("pitchFeedback"), "Pitch copied to clipboard.");
+          } catch {
+            pitch.focus();
+            pitch.select();
+            const copied = document.execCommand("copy");
+            setFeedback(
+              getElement("pitchFeedback"),
+              copied
+                ? "Pitch copied to clipboard."
+                : "Clipboard access was blocked. Select the draft text and copy it manually.",
+              !copied,
+            );
+          }
+        });
+
+        getElement("downloadReport").addEventListener("click", async () => {
+          const button = getElement("downloadReport");
+          const feedback = getElement("exportFeedback");
+          if (button.disabled) return;
+          button.disabled = true;
+          button.lastChild.textContent = "Preparing PNG…";
+          setFeedback(feedback, "Rendering your report card at high resolution…");
+          try {
+            if (typeof window.html2canvas !== "function") {
+              throw new Error("The report export library did not load.");
+            }
+            const canvas = await window.html2canvas(getElement("reportCard"), {
+              backgroundColor: "#201f30",
+              scale: 2,
+              useCORS: true,
+              logging: false,
+            });
+            const link = document.createElement("a");
+            const handle = currentSnapshot().handle || "report";
+            link.download = `creator-rate-${handle.replace(/[^a-z0-9-]/gi, "-")}.png`;
+            link.href = canvas.toDataURL("image/png");
+            link.click();
+            setFeedback(feedback, "Report card downloaded.");
+          } catch {
+            setFeedback(
+              feedback,
+              "The report could not be exported. Check your internet connection and browser download permissions.",
+              true,
+            );
+          } finally {
+            button.disabled = false;
+            button.lastChild.textContent = "Download PNG";
+          }
+        });
+
+        try {
+          const stored = localStorage.getItem(STORAGE_KEY);
+          if (stored !== null) {
+            const parsed = JSON.parse(stored);
+            if (!Array.isArray(parsed)) throw new Error("Invalid saved data format.");
+            snapshots = parsed.filter(validSnapshot);
+          }
+        } catch {
+          showStorageError("Saved snapshots could not be read from this browser. Your current form still works.");
+        }
+
+        renderLiveMetrics();
+        renderHistory();
+        renderChart();
+      })();
+    </script>
+  </body>
+</html>
